@@ -3,6 +3,11 @@
 Secure Handy Safe is an on-device cryptography web app built with React, TypeScript, and Vite.
 All encryption/decryption runs in your browser only.
 
+## Links
+
+- Live: https://crypt.localtool.tech/
+- LeanVibe: https://leanvibe.io/vibe/secure-handy-safe-mmk5u1kz
+
 ## Privacy model
 
 - No server upload for cryptographic processing
