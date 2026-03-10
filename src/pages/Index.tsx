@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 import {
   Lock, Unlock, Copy, Download, Upload, Shield, FileText, Hash,
-  Eye, EyeOff, RefreshCw, Trash2, ArrowRightLeft, Globe,
+  Eye, EyeOff, RefreshCw, Trash2, ArrowRightLeft, Globe, Github, Star, ExternalLink,
 } from "lucide-react";
 import { detectLang, getTranslations, LANG_LABELS, type Lang } from "@/lib/i18n";
 
@@ -558,6 +558,28 @@ const Index = () => {
         <div className="mt-12 text-center text-xs text-muted-foreground space-y-1">
           <p>{i.footer1}</p>
           <p className="font-mono">{i.footer2}</p>
+          <div className="pt-3 flex flex-wrap justify-center gap-2">
+            <a
+              href="https://github.com/salvo1661/local-crypt"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs hover:bg-muted transition-colors"
+            >
+              <Github className="h-3.5 w-3.5" />
+              <span>Open Source on GitHub</span>
+              <ExternalLink className="h-3 w-3" />
+            </a>
+            <a
+              href="https://leanvibe.io/vibe/secure-handy-safe-mmk5u1kz"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs hover:bg-muted transition-colors"
+            >
+              <Star className="h-3.5 w-3.5" />
+              <span>Recommended on LeanVibe</span>
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
         </div>
       </main>
     </div>
