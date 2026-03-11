@@ -67,7 +67,7 @@ const t = {
     errorFileRead: "Failed to read file",
     randomKeySuccess: "Random key generated",
     footer1: "All encryption/decryption runs in your browser only. No data is sent to any server.",
-    footer2: "Powered by CryptoJS · AES-128/192/256 · 3DES · Rabbit · RC4 · SHA-1/224/256/384/512 · SHA-3 · MD5 · RIPEMD160",
+    footer2: "Powered by OpenPGP.js for encryption · CryptoJS for hashing (SHA-1/224/256/384/512, SHA-3, MD5, RIPEMD160)",
   },
   ko: {
     subtitle: "클라이언트 사이드 암호화 · 서버 전송 없음",
@@ -123,7 +123,7 @@ const t = {
     errorFileRead: "파일 읽기 실패",
     randomKeySuccess: "랜덤 키 생성 완료",
     footer1: "모든 암호화/복호화는 브라우저에서만 실행됩니다. 데이터가 서버로 전송되지 않습니다.",
-    footer2: "Powered by CryptoJS · AES-128/192/256 · 3DES · Rabbit · RC4 · SHA-1/224/256/384/512 · SHA-3 · MD5 · RIPEMD160",
+    footer2: "Powered by OpenPGP.js for encryption · CryptoJS for hashing (SHA-1/224/256/384/512, SHA-3, MD5, RIPEMD160)",
   },
   ja: {
     subtitle: "クライアントサイド暗号化 · サーバー送信なし",
@@ -179,7 +179,7 @@ const t = {
     errorFileRead: "ファイル読み込み失敗",
     randomKeySuccess: "ランダムキー生成完了",
     footer1: "すべての暗号化/復号化はブラウザ内でのみ実行されます。データはサーバーに送信されません。",
-    footer2: "Powered by CryptoJS · AES-128/192/256 · 3DES · Rabbit · RC4 · SHA-1/224/256/384/512 · SHA-3 · MD5 · RIPEMD160",
+    footer2: "Powered by OpenPGP.js for encryption · CryptoJS for hashing (SHA-1/224/256/384/512, SHA-3, MD5, RIPEMD160)",
   },
   es: {
     subtitle: "Cifrado del lado del cliente · Sin transmisión al servidor",
@@ -235,7 +235,7 @@ const t = {
     errorFileRead: "Error al leer archivo",
     randomKeySuccess: "Clave aleatoria generada",
     footer1: "Todo el cifrado/descifrado se ejecuta solo en su navegador. No se envían datos a ningún servidor.",
-    footer2: "Powered by CryptoJS · AES-128/192/256 · 3DES · Rabbit · RC4 · SHA-1/224/256/384/512 · SHA-3 · MD5 · RIPEMD160",
+    footer2: "Powered by OpenPGP.js for encryption · CryptoJS for hashing (SHA-1/224/256/384/512, SHA-3, MD5, RIPEMD160)",
   },
   fr: {
     subtitle: "Chiffrement côté client · Aucune transmission serveur",
@@ -291,7 +291,7 @@ const t = {
     errorFileRead: "Échec de la lecture du fichier",
     randomKeySuccess: "Clé aléatoire générée",
     footer1: "Tout le chiffrement/déchiffrement s'exécute uniquement dans votre navigateur. Aucune donnée n'est envoyée à un serveur.",
-    footer2: "Powered by CryptoJS · AES-128/192/256 · 3DES · Rabbit · RC4 · SHA-1/224/256/384/512 · SHA-3 · MD5 · RIPEMD160",
+    footer2: "Powered by OpenPGP.js for encryption · CryptoJS for hashing (SHA-1/224/256/384/512, SHA-3, MD5, RIPEMD160)",
   },
   de: {
     subtitle: "Clientseitige Verschlüsselung · Keine Serverübertragung",
@@ -347,7 +347,7 @@ const t = {
     errorFileRead: "Datei konnte nicht gelesen werden",
     randomKeySuccess: "Zufallsschlüssel generiert",
     footer1: "Alle Ver-/Entschlüsselung läuft nur in Ihrem Browser. Keine Daten werden an einen Server gesendet.",
-    footer2: "Powered by CryptoJS · AES-128/192/256 · 3DES · Rabbit · RC4 · SHA-1/224/256/384/512 · SHA-3 · MD5 · RIPEMD160",
+    footer2: "Powered by OpenPGP.js for encryption · CryptoJS for hashing (SHA-1/224/256/384/512, SHA-3, MD5, RIPEMD160)",
   },
   zh: {
     subtitle: "客户端加密 · 不传输到服务器",
@@ -403,7 +403,7 @@ const t = {
     errorFileRead: "文件读取失败",
     randomKeySuccess: "随机密钥已生成",
     footer1: "所有加密/解密仅在浏览器中运行。不会向任何服务器发送数据。",
-    footer2: "Powered by CryptoJS · AES-128/192/256 · 3DES · Rabbit · RC4 · SHA-1/224/256/384/512 · SHA-3 · MD5 · RIPEMD160",
+    footer2: "Powered by OpenPGP.js for encryption · CryptoJS for hashing (SHA-1/224/256/384/512, SHA-3, MD5, RIPEMD160)",
   },
   id: {
     subtitle: "Enkripsi sisi klien · Tanpa transmisi server",
@@ -459,7 +459,7 @@ const t = {
     errorFileRead: "Gagal membaca file",
     randomKeySuccess: "Kunci acak berhasil dibuat",
     footer1: "Semua enkripsi/dekripsi berjalan hanya di browser Anda. Tidak ada data yang dikirim ke server.",
-    footer2: "Powered by CryptoJS · AES-128/192/256 · 3DES · Rabbit · RC4 · SHA-1/224/256/384/512 · SHA-3 · MD5 · RIPEMD160",
+    footer2: "Powered by OpenPGP.js for encryption · CryptoJS for hashing (SHA-1/224/256/384/512, SHA-3, MD5, RIPEMD160)",
   },
   ar: {
     subtitle: "تشفير من جانب العميل · بدون إرسال للخادم",
@@ -515,7 +515,7 @@ const t = {
     errorFileRead: "فشل في قراءة الملف",
     randomKeySuccess: "تم توليد مفتاح عشوائي",
     footer1: "يتم تشغيل جميع عمليات التشفير/فك التشفير في متصفحك فقط. لا يتم إرسال أي بيانات إلى أي خادم.",
-    footer2: "Powered by CryptoJS · AES-128/192/256 · 3DES · Rabbit · RC4 · SHA-1/224/256/384/512 · SHA-3 · MD5 · RIPEMD160",
+    footer2: "Powered by OpenPGP.js for encryption · CryptoJS for hashing (SHA-1/224/256/384/512, SHA-3, MD5, RIPEMD160)",
   },
 } as const;
 
