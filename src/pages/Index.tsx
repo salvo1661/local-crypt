@@ -1,5 +1,8 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import CryptoJS from "crypto-js";
+import { hmac } from "@noble/hashes/hmac.js";
+import { sha3_256, sha3_512 } from "@noble/hashes/sha3.js";
+import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils.js";
 import { createMessage, decrypt, encrypt, enums, readMessage, type PartialConfig } from "openpgp";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -19,20 +22,25 @@ import {
 } from "lucide-react";
 import { detectLang, getTranslations, LANG_LABELS, type Lang } from "@/lib/i18n";
 
-type HashAlgo = "MD5" | "SHA-1" | "SHA-224" | "SHA-256" | "SHA-384" | "SHA-512" | "SHA-3" | "RIPEMD160";
+type HashAlgo = "MD5" | "SHA-1" | "SHA-224" | "SHA-256" | "SHA-384" | "SHA-512" | "SHA3-256" | "SHA3-512" | "RIPEMD160";
+type Sha3Algo = "SHA3-256" | "SHA3-512";
 type PgpSymmetricAlgo = "aes128" | "aes192" | "aes256" | "tripledes" | "cast5" | "blowfish" | "twofish" | "idea";
 type PgpHashAlgo = "sha256" | "sha384" | "sha512" | "sha224" | "sha3_256" | "sha3_512" | "sha1" | "md5" | "ripemd";
 type PgpS2kType = "iterated" | "argon2";
 
-const HASH_ALGOS: HashAlgo[] = ["MD5", "SHA-1", "SHA-224", "SHA-256", "SHA-384", "SHA-512", "SHA-3", "RIPEMD160"];
-const HASH_IMPL: Record<HashAlgo, "MD5" | "SHA1" | "SHA224" | "SHA256" | "SHA384" | "SHA512" | "SHA3" | "RIPEMD160"> = {
+const HASH_ALGOS: HashAlgo[] = ["MD5", "SHA-1", "SHA-224", "SHA-256", "SHA-384", "SHA-512", "SHA3-256", "SHA3-512", "RIPEMD160"];
+// CryptoJS "SHA3" is pre-standard Keccak, so FIPS 202 SHA-3 comes from @noble/hashes instead.
+const SHA3_IMPL: Record<Sha3Algo, typeof sha3_256> = {
+  "SHA3-256": sha3_256,
+  "SHA3-512": sha3_512,
+};
+const HASH_IMPL: Record<Exclude<HashAlgo, Sha3Algo>, "MD5" | "SHA1" | "SHA224" | "SHA256" | "SHA384" | "SHA512" | "RIPEMD160"> = {
   MD5: "MD5",
   "SHA-1": "SHA1",
   "SHA-224": "SHA224",
   "SHA-256": "SHA256",
   "SHA-384": "SHA384",
   "SHA-512": "SHA512",
-  "SHA-3": "SHA3",
   RIPEMD160: "RIPEMD160",
 };
 const LANGS: Lang[] = ["en", "ko", "ja", "zh", "es", "fr", "de", "id", "ar"];
@@ -79,14 +87,15 @@ const SITE_META: Record<Lang, { title: string; description: string }> = {
   },
 };
 
+const isSha3 = (algo: HashAlgo): algo is Sha3Algo => algo in SHA3_IMPL;
+
 function hashText(algo: HashAlgo, text: string): string {
+  if (isSha3(algo)) return bytesToHex(SHA3_IMPL[algo](utf8ToBytes(text)));
   return CryptoJS[HASH_IMPL[algo]](text).toString();
 }
 
-// CryptoJS "SHA3" is pre-standard Keccak, so HMAC-SHA3 would not match standard implementations.
-const HMAC_ALGOS: HashAlgo[] = HASH_ALGOS.filter((a) => a !== "SHA-3");
-
 function hmacText(algo: HashAlgo, text: string, key: string): string {
+  if (isSha3(algo)) return bytesToHex(hmac(SHA3_IMPL[algo], utf8ToBytes(key), utf8ToBytes(text)));
   return CryptoJS[`Hmac${HASH_IMPL[algo]}`](text, key).toString();
 }
 
@@ -560,17 +569,14 @@ const Index = () => {
                   <Label>{i.hashAlgo}</Label>
                   <Select value={hashAlgo} onValueChange={(v) => setHashAlgo(v as HashAlgo)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{(useHmac ? HMAC_ALGOS : HASH_ALGOS).map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}</SelectContent>
+                    <SelectContent>{HASH_ALGOS.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div className="flex items-center gap-2">
                   <Switch
                     id="use-hmac"
                     checked={useHmac}
-                    onCheckedChange={(checked) => {
-                      setUseHmac(checked);
-                      if (checked && !HMAC_ALGOS.includes(hashAlgo)) setHashAlgo("SHA-256");
-                    }}
+                    onCheckedChange={setUseHmac}
                   />
                   <Label htmlFor="use-hmac" className="cursor-pointer">{i.hmacToggle}</Label>
                 </div>

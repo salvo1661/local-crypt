@@ -34,14 +34,16 @@ All encryption/decryption runs in your browser only.
 - SHA-256
 - SHA-384
 - SHA-512
-- SHA-3
+- SHA3-256 / SHA3-512 (FIPS 202, via `@noble/hashes`)
 - RIPEMD160
+
+All of the above are also available as HMAC with a user-supplied key.
 
 ## Main features
 
 - Text encryption/decryption
 - File encryption/decryption (`.pgp` flow supported)
-- Hash generation
+- Hash and HMAC generation
 - Multilingual UI (`en`, `ko`, `ja`, `zh`, `es`, `fr`, `de`, `id`, `ar`)
 
 ## Crypto format notes
