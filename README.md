@@ -1,6 +1,6 @@
-# Secure Handy Safe
+# EZCrypt
 
-Secure Handy Safe is an on-device cryptography web app built with React, TypeScript, and Vite.
+EZCrypt is an on-device cryptography web app built with React, TypeScript, and Vite.
 All encryption/decryption runs in your browser only.
 
 ## Links

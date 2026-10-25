@@ -41,39 +41,39 @@ const PGP_HASH_ALGOS: PgpHashAlgo[] = ["sha256", "sha384", "sha512", "sha224", "
 const PGP_S2K_TYPES: PgpS2kType[] = ["iterated", "argon2"];
 const SITE_META: Record<Lang, { title: string; description: string }> = {
   en: {
-    title: "Secure Handy Safe | On-Device Encryption",
+    title: "EZCrypt | On-Device Encryption",
     description: "On-device encryption tool with no server upload. Uses PGP-compatible symmetric encryption format.",
   },
   ko: {
-    title: "Secure Handy Safe | 온디바이스 암호화",
+    title: "EZCrypt | 온디바이스 암호화",
     description: "서버 업로드 없이 브라우저에서만 동작하는 온디바이스 암호화 도구. PGP 호환 대칭 암호화 포맷을 사용합니다.",
   },
   ja: {
-    title: "Secure Handy Safe | オンデバイス暗号化",
+    title: "EZCrypt | オンデバイス暗号化",
     description: "サーバーへアップロードせず、ブラウザ内だけで動作するオンデバイス暗号化ツール。PGP互換の共通鍵暗号化フォーマットを使用。",
   },
   zh: {
-    title: "Secure Handy Safe | 设备端加密",
+    title: "EZCrypt | 设备端加密",
     description: "无需上传到服务器，仅在浏览器本地运行的设备端加密工具。使用 PGP 兼容的对称加密格式。",
   },
   es: {
-    title: "Secure Handy Safe | Cifrado en el dispositivo",
+    title: "EZCrypt | Cifrado en el dispositivo",
     description: "Herramienta de cifrado en el dispositivo sin subida al servidor. Usa formato de cifrado simétrico compatible con PGP.",
   },
   fr: {
-    title: "Secure Handy Safe | Chiffrement sur appareil",
+    title: "EZCrypt | Chiffrement sur appareil",
     description: "Outil de chiffrement local sans envoi au serveur. Utilise un format de chiffrement symétrique compatible PGP.",
   },
   de: {
-    title: "Secure Handy Safe | On-Device-Verschlüsselung",
+    title: "EZCrypt | On-Device-Verschlüsselung",
     description: "On-Device-Verschlüsselungstool ohne Server-Upload. Verwendet ein PGP-kompatibles symmetrisches Verschlüsselungsformat.",
   },
   id: {
-    title: "Secure Handy Safe | Enkripsi di Perangkat",
+    title: "EZCrypt | Enkripsi di Perangkat",
     description: "Alat enkripsi di perangkat tanpa unggah ke server. Menggunakan format enkripsi simetris yang kompatibel dengan PGP.",
   },
   ar: {
-    title: "Secure Handy Safe | تشفير على الجهاز",
+    title: "EZCrypt | تشفير على الجهاز",
     description: "أداة تشفير تعمل على الجهاز بدون رفع إلى الخادم. تستخدم تنسيق تشفير متماثل متوافقًا مع PGP.",
   },
 };
@@ -287,7 +287,7 @@ const Index = () => {
             <Shield className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight font-mono">CryptoForge</h1>
+            <h1 className="text-xl font-bold tracking-tight font-mono">EZCrypt</h1>
             <p className="text-xs text-muted-foreground">{i.subtitle}</p>
           </div>
           <div className="ml-auto flex items-center gap-3">
