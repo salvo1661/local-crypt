@@ -14,8 +14,9 @@ export const LANG_LABELS: Record<Lang, string> = {
 
 const t = {
   en: {
-    subtitle: "Client-side encryption · No server transmission",
+    subtitle: "Client-side encryption",
     localBadge: "100% Local Processing",
+    localBadgeShort: "100% Local",
     textTab: "Text",
     fileTab: "File",
     hashTab: "Hash",
@@ -79,8 +80,9 @@ const t = {
     leanvibeLink: "Recommended on LeanVibe",
   },
   ko: {
-    subtitle: "클라이언트 사이드 암호화 · 서버 전송 없음",
+    subtitle: "클라이언트 사이드 암호화",
     localBadge: "100% 로컬 처리",
+    localBadgeShort: "100% 로컬",
     textTab: "텍스트",
     fileTab: "파일",
     hashTab: "해시",
@@ -144,8 +146,9 @@ const t = {
     leanvibeLink: "LeanVibe 추천 항목",
   },
   ja: {
-    subtitle: "クライアントサイド暗号化 · サーバー送信なし",
+    subtitle: "クライアントサイド暗号化",
     localBadge: "100% ローカル処理",
+    localBadgeShort: "100% ローカル",
     textTab: "テキスト",
     fileTab: "ファイル",
     hashTab: "ハッシュ",
@@ -209,8 +212,9 @@ const t = {
     leanvibeLink: "LeanVibeのおすすめ",
   },
   es: {
-    subtitle: "Cifrado del lado del cliente · Sin transmisión al servidor",
+    subtitle: "Cifrado del lado del cliente",
     localBadge: "100% Procesamiento Local",
+    localBadgeShort: "100% Local",
     textTab: "Texto",
     fileTab: "Archivo",
     hashTab: "Hash",
@@ -274,8 +278,9 @@ const t = {
     leanvibeLink: "Recomendado en LeanVibe",
   },
   fr: {
-    subtitle: "Chiffrement côté client · Aucune transmission serveur",
+    subtitle: "Chiffrement côté client",
     localBadge: "100% Traitement Local",
+    localBadgeShort: "100% Local",
     textTab: "Texte",
     fileTab: "Fichier",
     hashTab: "Hash",
@@ -339,8 +344,9 @@ const t = {
     leanvibeLink: "Recommandé sur LeanVibe",
   },
   de: {
-    subtitle: "Clientseitige Verschlüsselung · Keine Serverübertragung",
+    subtitle: "Clientseitige Verschlüsselung",
     localBadge: "100% Lokale Verarbeitung",
+    localBadgeShort: "100% Lokal",
     textTab: "Text",
     fileTab: "Datei",
     hashTab: "Hash",
@@ -404,8 +410,9 @@ const t = {
     leanvibeLink: "Empfohlen auf LeanVibe",
   },
   zh: {
-    subtitle: "客户端加密 · 不传输到服务器",
+    subtitle: "客户端加密",
     localBadge: "100% 本地处理",
+    localBadgeShort: "100% 本地",
     textTab: "文本",
     fileTab: "文件",
     hashTab: "哈希",
@@ -469,8 +476,9 @@ const t = {
     leanvibeLink: "LeanVibe 推荐",
   },
   id: {
-    subtitle: "Enkripsi sisi klien · Tanpa transmisi server",
+    subtitle: "Enkripsi sisi klien",
     localBadge: "100% Pemrosesan Lokal",
+    localBadgeShort: "100% Lokal",
     textTab: "Teks",
     fileTab: "File",
     hashTab: "Hash",
@@ -534,8 +542,9 @@ const t = {
     leanvibeLink: "Direkomendasikan di LeanVibe",
   },
   ar: {
-    subtitle: "تشفير من جانب العميل · بدون إرسال للخادم",
+    subtitle: "تشفير من جانب العميل",
     localBadge: "معالجة محلية 100%",
+    localBadgeShort: "محلي 100%",
     textTab: "نص",
     fileTab: "ملف",
     hashTab: "تجزئة",

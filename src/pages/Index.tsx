@@ -298,10 +298,11 @@ const Index = () => {
             <h1 className="text-xl font-bold tracking-tight font-mono">EZCrypt</h1>
             <p className="text-xs text-muted-foreground">{i.subtitle}</p>
           </div>
-          <div className="ml-auto flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
+          <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground bg-muted px-3 py-1.5 rounded-full">
               <Lock className="h-3 w-3" />
-              {i.localBadge}
+              <span className="sm:hidden">{i.localBadgeShort}</span>
+              <span className="hidden sm:inline">{i.localBadge}</span>
             </div>
             <Select
               value={lang}
@@ -311,8 +312,8 @@ const Index = () => {
                 navigate(`/${nextLang}`);
               }}
             >
-              <SelectTrigger className="w-[130px] h-8 text-xs">
-                <Globe className="h-3.5 w-3.5 mr-1.5" />
+              <SelectTrigger className="w-auto gap-1 sm:w-[130px] h-8 text-xs">
+                <Globe className="h-3.5 w-3.5 sm:mr-1.5" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
