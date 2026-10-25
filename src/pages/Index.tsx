@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect, type ReactNode } from "react";
 import CryptoJS from "crypto-js";
 import { createMessage, decrypt, encrypt, enums, readMessage, type PartialConfig } from "openpgp";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -10,11 +10,12 @@ import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Lock, Unlock, Copy, Download, Upload, Shield, FileText, Hash,
-  Eye, EyeOff, RefreshCw, Trash2, ArrowRightLeft, Globe, Github, Star, ExternalLink,
+  Eye, EyeOff, RefreshCw, ChevronDown, Trash2, ArrowRightLeft, Globe, Github, Star, ExternalLink,
 } from "lucide-react";
 import { detectLang, getTranslations, LANG_LABELS, type Lang } from "@/lib/i18n";
 
@@ -122,6 +123,22 @@ async function decryptBinaryPgp(armored: string, passphrase: string, config: Par
     config,
   });
   return result.data;
+}
+
+// Collapsed by default on mobile; always expanded from md up.
+function MobileCollapsible({ label, children }: { label: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <CollapsibleTrigger className="md:hidden flex w-full items-center justify-between rounded-md border border-border px-3 py-2 text-sm font-medium">
+        {label}
+        <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
+      </CollapsibleTrigger>
+      <CollapsibleContent forceMount className="mt-4 data-[state=closed]:hidden md:mt-0 md:!block">
+        {children}
+      </CollapsibleContent>
+    </Collapsible>
+  );
 }
 
 const Index = () => {
@@ -282,7 +299,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
+        <div className="max-w-5xl xl:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 xl:px-8 py-4 flex items-center gap-3">
           <div className="p-2 rounded-lg bg-primary/10">
             <Shield className="h-6 w-6 text-primary" />
           </div>
@@ -317,7 +334,7 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-5xl xl:max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 xl:px-8 py-8">
         <Tabs defaultValue="text" className="space-y-6">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 h-12">
             <TabsTrigger value="text" className="gap-2 text-sm"><FileText className="h-4 w-4" /> {i.textTab}</TabsTrigger>
@@ -333,10 +350,12 @@ const Index = () => {
                 <TabsTrigger value="decrypt" className="gap-2 text-sm font-semibold"><Unlock className="h-4 w-4" /> {i.decrypt}</TabsTrigger>
               </TabsList>
 
-              <div className="grid md:grid-cols-[280px_1fr] gap-4">
+              <div className="grid md:grid-cols-[280px_1fr] xl:grid-cols-[340px_1fr] gap-4 xl:gap-6">
                 <Card>
                   <CardHeader className="pb-3"><CardTitle className="text-base">{i.settings}</CardTitle></CardHeader>
                   <CardContent className="space-y-4">
+                    <MobileCollapsible label={i.advancedOptions}>
+                    <div className="space-y-4">
                     <div className="space-y-2">
                       <Label>{i.pgpSymmetricAlgorithm}</Label>
                       <Select value={pgpSymmetricAlgo} onValueChange={(v) => setPgpSymmetricAlgo(v as PgpSymmetricAlgo)}>
@@ -377,6 +396,8 @@ const Index = () => {
                         {i.argon2Note}
                       </p>
                     )}
+                    </div>
+                    </MobileCollapsible>
                     <div className="space-y-2">
                       <Label>{i.secretKey}</Label>
                       <div className="flex gap-1">
@@ -402,7 +423,7 @@ const Index = () => {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <Textarea value={textInput} onChange={(e) => setTextInput(e.target.value)} placeholder={textMode === "decrypt" ? i.pasteEncrypted : i.enterText} className="font-mono text-sm min-h-[140px] resize-y" />
+                      <Textarea value={textInput} onChange={(e) => setTextInput(e.target.value)} placeholder={textMode === "decrypt" ? i.pasteEncrypted : i.enterText} className="font-mono text-sm min-h-[140px] xl:min-h-[240px] resize-y" />
                     </CardContent>
                   </Card>
                   <Button onClick={handleTextProcess} className="w-full h-11 gap-2 font-semibold">
@@ -415,7 +436,7 @@ const Index = () => {
                       <Button variant="ghost" size="icon" onClick={handleCopy} disabled={!textOutput} title={i.copy}><Copy className="h-4 w-4" /></Button>
                     </CardHeader>
                     <CardContent>
-                      <Textarea readOnly value={textOutput} placeholder={i.resultPlaceholder} className="font-mono text-sm min-h-[140px] resize-y bg-muted/50" />
+                      <Textarea readOnly value={textOutput} placeholder={i.resultPlaceholder} className="font-mono text-sm min-h-[140px] xl:min-h-[240px] resize-y bg-muted/50" />
                     </CardContent>
                   </Card>
                 </div>
@@ -430,12 +451,14 @@ const Index = () => {
                 <TabsTrigger value="encrypt" className="gap-2 text-sm font-semibold"><Lock className="h-4 w-4" /> {i.encrypt}</TabsTrigger>
                 <TabsTrigger value="decrypt" className="gap-2 text-sm font-semibold"><Unlock className="h-4 w-4" /> {i.decrypt}</TabsTrigger>
               </TabsList>
-            <Card className="max-w-2xl mx-auto">
+            <Card className="max-w-2xl xl:max-w-5xl mx-auto">
               <CardHeader>
                 <CardTitle className="text-lg">{i.fileTitle}</CardTitle>
                 <CardDescription>{i.filePgpDesc}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-5">
+                <MobileCollapsible label={i.advancedOptions}>
+                <div className="grid gap-5 xl:grid-cols-2">
                 <div className="space-y-2">
                   <Label>{i.pgpSymmetricAlgorithm}</Label>
                   <Select value={pgpSymmetricAlgo} onValueChange={(v) => setPgpSymmetricAlgo(v as PgpSymmetricAlgo)}>
@@ -476,6 +499,8 @@ const Index = () => {
                     {i.argon2Note}
                   </p>
                 )}
+                </div>
+                </MobileCollapsible>
                 <div className="space-y-2">
                   <Label>{i.secretKey}</Label>
                   <div className="flex gap-1">
@@ -519,7 +544,7 @@ const Index = () => {
 
           {/* HASH TAB */}
           <TabsContent value="hash" className="space-y-4">
-            <Card className="max-w-2xl mx-auto">
+            <Card className="max-w-2xl xl:max-w-4xl mx-auto">
               <CardHeader>
                 <CardTitle className="text-lg">{i.hashTitle}</CardTitle>
                 <CardDescription>{i.hashDesc}</CardDescription>
