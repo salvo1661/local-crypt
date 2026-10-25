@@ -11,6 +11,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Lock, Unlock, Copy, Download, Upload, Shield, FileText, Hash,
   Eye, EyeOff, RefreshCw, Trash2, ArrowRightLeft, Globe, Github, Star, ExternalLink,
@@ -34,6 +35,7 @@ const HASH_IMPL: Record<HashAlgo, "MD5" | "SHA1" | "SHA224" | "SHA256" | "SHA384
   RIPEMD160: "RIPEMD160",
 };
 const LANGS: Lang[] = ["en", "ko", "ja", "zh", "es", "fr", "de", "id", "ar"];
+const LANG_SET = new Set<Lang>(LANGS);
 const PGP_SYMMETRIC_ALGOS: PgpSymmetricAlgo[] = ["aes128", "aes192", "aes256", "tripledes", "cast5", "blowfish", "twofish", "idea"];
 const PGP_HASH_ALGOS: PgpHashAlgo[] = ["sha256", "sha384", "sha512", "sha224", "sha3_256", "sha3_512", "sha1", "md5", "ripemd"];
 const PGP_S2K_TYPES: PgpS2kType[] = ["iterated", "argon2"];
@@ -123,7 +125,13 @@ async function decryptBinaryPgp(armored: string, passphrase: string, config: Par
 }
 
 const Index = () => {
-  const [lang, setLang] = useState<Lang>(detectLang);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const langFromPath = useMemo(() => {
+    const candidate = location.pathname.split("/").filter(Boolean)[0] as Lang | undefined;
+    return candidate && LANG_SET.has(candidate) ? candidate : null;
+  }, [location.pathname]);
+  const [lang, setLang] = useState<Lang>(() => langFromPath || detectLang());
   const i = useMemo(() => getTranslations(lang), [lang]);
   const [pgpSymmetricAlgo, setPgpSymmetricAlgo] = useState<PgpSymmetricAlgo>("aes256");
   const [pgpHashAlgo, setPgpHashAlgo] = useState<PgpHashAlgo>("sha512");
@@ -131,8 +139,15 @@ const Index = () => {
   const [pgpS2kIterationCountByte, setPgpS2kIterationCountByte] = useState<number>(224);
 
   useEffect(() => {
+    if (langFromPath && langFromPath !== lang) {
+      setLang(langFromPath);
+    }
+  }, [langFromPath, lang]);
+
+  useEffect(() => {
     const meta = SITE_META[lang];
     document.title = meta.title;
+    document.documentElement.lang = lang;
 
     const upsertMeta = (
       attr: "name" | "property",
@@ -147,12 +162,34 @@ const Index = () => {
       }
       tag.setAttribute("content", content);
     };
+    const upsertLink = (
+      rel: string,
+      href: string,
+      hreflang?: string,
+    ) => {
+      const selector = hreflang
+        ? `link[rel="${rel}"][hreflang="${hreflang}"]`
+        : `link[rel="${rel}"]:not([hreflang])`;
+      let tag = document.querySelector(selector) as HTMLLinkElement | null;
+      if (!tag) {
+        tag = document.createElement("link");
+        tag.setAttribute("rel", rel);
+        if (hreflang) tag.setAttribute("hreflang", hreflang);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute("href", href);
+    };
 
     upsertMeta("name", "description", meta.description);
     upsertMeta("property", "og:title", meta.title);
     upsertMeta("property", "og:description", meta.description);
     upsertMeta("name", "twitter:title", meta.title);
     upsertMeta("name", "twitter:description", meta.description);
+    upsertLink("canonical", `https://crypt.localtool.tech/${lang}`);
+    LANGS.forEach((l) => {
+      upsertLink("alternate", `https://crypt.localtool.tech/${l}`, l);
+    });
+    upsertLink("alternate", "https://crypt.localtool.tech/en", "x-default");
   }, [lang]);
 
   const [textInput, setTextInput] = useState("");
@@ -258,7 +295,14 @@ const Index = () => {
               <Lock className="h-3 w-3" />
               {i.localBadge}
             </div>
-            <Select value={lang} onValueChange={(v) => setLang(v as Lang)}>
+            <Select
+              value={lang}
+              onValueChange={(v) => {
+                const nextLang = v as Lang;
+                setLang(nextLang);
+                navigate(`/${nextLang}`);
+              }}
+            >
               <SelectTrigger className="w-[130px] h-8 text-xs">
                 <Globe className="h-3.5 w-3.5 mr-1.5" />
                 <SelectValue />
@@ -294,14 +338,14 @@ const Index = () => {
                   <CardHeader className="pb-3"><CardTitle className="text-base">{i.settings}</CardTitle></CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label>PGP Symmetric Algorithm</Label>
+                      <Label>{i.pgpSymmetricAlgorithm}</Label>
                       <Select value={pgpSymmetricAlgo} onValueChange={(v) => setPgpSymmetricAlgo(v as PgpSymmetricAlgo)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>{PGP_SYMMETRIC_ALGOS.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label>S2K Type</Label>
+                      <Label>{i.s2kType}</Label>
                       <Select value={pgpS2kType} onValueChange={(v) => setPgpS2kType(v as PgpS2kType)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>{PGP_S2K_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
@@ -310,14 +354,14 @@ const Index = () => {
                     {pgpS2kType === "iterated" ? (
                       <>
                         <div className="space-y-2">
-                          <Label>PGP Hash Algorithm</Label>
+                          <Label>{i.pgpHashAlgorithm}</Label>
                           <Select value={pgpHashAlgo} onValueChange={(v) => setPgpHashAlgo(v as PgpHashAlgo)}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>{PGP_HASH_ALGOS.map((h) => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent>
                           </Select>
                         </div>
                         <div className="space-y-2">
-                          <Label>S2K Iteration Count Byte (0-255)</Label>
+                          <Label>{i.s2kIterationCountByte}</Label>
                           <Input
                             type="number"
                             min={0}
@@ -330,7 +374,7 @@ const Index = () => {
                       </>
                     ) : (
                       <p className="text-xs text-muted-foreground">
-                        Argon2 uses built-in params from OpenPGP config; iterated-only fields are hidden.
+                        {i.argon2Note}
                       </p>
                     )}
                     <div className="space-y-2">
@@ -389,18 +433,18 @@ const Index = () => {
             <Card className="max-w-2xl mx-auto">
               <CardHeader>
                 <CardTitle className="text-lg">{i.fileTitle}</CardTitle>
-                <CardDescription>Select a file to encrypt/decrypt with PGP-compatible format (.pgp).</CardDescription>
+                <CardDescription>{i.filePgpDesc}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-5">
                 <div className="space-y-2">
-                  <Label>PGP Symmetric Algorithm</Label>
+                  <Label>{i.pgpSymmetricAlgorithm}</Label>
                   <Select value={pgpSymmetricAlgo} onValueChange={(v) => setPgpSymmetricAlgo(v as PgpSymmetricAlgo)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>{PGP_SYMMETRIC_ALGOS.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>S2K Type</Label>
+                  <Label>{i.s2kType}</Label>
                   <Select value={pgpS2kType} onValueChange={(v) => setPgpS2kType(v as PgpS2kType)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>{PGP_S2K_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
@@ -409,14 +453,14 @@ const Index = () => {
                 {pgpS2kType === "iterated" ? (
                   <>
                     <div className="space-y-2">
-                      <Label>PGP Hash Algorithm</Label>
+                      <Label>{i.pgpHashAlgorithm}</Label>
                       <Select value={pgpHashAlgo} onValueChange={(v) => setPgpHashAlgo(v as PgpHashAlgo)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>{PGP_HASH_ALGOS.map((h) => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label>S2K Iteration Count Byte (0-255)</Label>
+                      <Label>{i.s2kIterationCountByte}</Label>
                       <Input
                         type="number"
                         min={0}
@@ -429,7 +473,7 @@ const Index = () => {
                   </>
                 ) : (
                   <p className="text-xs text-muted-foreground">
-                    Argon2 uses built-in params from OpenPGP config; iterated-only fields are hidden.
+                    {i.argon2Note}
                   </p>
                 )}
                 <div className="space-y-2">
@@ -520,7 +564,7 @@ const Index = () => {
               className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs hover:bg-muted transition-colors"
             >
               <Github className="h-3.5 w-3.5" />
-              <span>Open Source on GitHub</span>
+              <span>{i.githubLink}</span>
               <ExternalLink className="h-3 w-3" />
             </a>
             <a
@@ -530,7 +574,7 @@ const Index = () => {
               className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs hover:bg-muted transition-colors"
             >
               <Star className="h-3.5 w-3.5" />
-              <span>Recommended on LeanVibe</span>
+              <span>{i.leanvibeLink}</span>
               <ExternalLink className="h-3 w-3" />
             </a>
           </div>
