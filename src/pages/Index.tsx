@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo, useEffect, type ReactNode } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import CryptoJS from "crypto-js";
 import { createMessage, decrypt, encrypt, enums, readMessage, type PartialConfig } from "openpgp";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -125,22 +124,6 @@ async function decryptBinaryPgp(armored: string, passphrase: string, config: Par
   return result.data;
 }
 
-// Collapsed by default on mobile; always expanded from md up.
-function MobileCollapsible({ label, children }: { label: string; children: ReactNode }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <Collapsible open={open} onOpenChange={setOpen}>
-      <CollapsibleTrigger className="md:hidden flex w-full items-center justify-between rounded-md border border-border px-3 py-2 text-sm font-medium">
-        {label}
-        <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
-      </CollapsibleTrigger>
-      <CollapsibleContent forceMount className="mt-4 data-[state=closed]:hidden md:mt-0 md:!block">
-        {children}
-      </CollapsibleContent>
-    </Collapsible>
-  );
-}
-
 const Index = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -219,6 +202,14 @@ const Index = () => {
   const [file, setFile] = useState<File | null>(null);
   const [fileKey, setFileKey] = useState("");
   const [showFileKey, setShowFileKey] = useState(false);
+  // PGP options are collapsed by default on mobile; always shown from md up.
+  const [showPgpOptions, setShowPgpOptions] = useState(false);
+  const pgpOptionsToggle = (
+    <button type="button" onClick={() => setShowPgpOptions((v) => !v)} className="md:hidden flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+      {i.moreOptions}
+      <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showPgpOptions ? "rotate-180" : ""}`} />
+    </button>
+  );
   const [fileMode, setFileMode] = useState<"encrypt" | "decrypt">("encrypt");
   const [processing, setProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -352,9 +343,9 @@ const Index = () => {
 
               <div className="grid md:grid-cols-[280px_1fr] xl:grid-cols-[340px_1fr] gap-4 xl:gap-6">
                 <Card>
-                  <CardHeader className="pb-3"><CardTitle className="text-base">{i.settings}</CardTitle></CardHeader>
+                  <CardHeader className="pb-3 flex-row items-center justify-between space-y-0"><CardTitle className="text-base">{i.settings}</CardTitle>{pgpOptionsToggle}</CardHeader>
                   <CardContent className="space-y-4">
-                    <MobileCollapsible label={i.advancedOptions}>
+                    <div className={showPgpOptions ? "" : "hidden md:block"}>
                     <div className="space-y-4">
                     <div className="space-y-2">
                       <Label>{i.pgpSymmetricAlgorithm}</Label>
@@ -397,8 +388,8 @@ const Index = () => {
                       </p>
                     )}
                     </div>
-                    </MobileCollapsible>
-                    <div className="space-y-2">
+                    </div>
+                    <div className={`space-y-2 ${showPgpOptions ? "" : "max-md:!mt-0"}`}>
                       <Label>{i.secretKey}</Label>
                       <div className="flex gap-1">
                         <div className="relative flex-1">
@@ -453,11 +444,14 @@ const Index = () => {
               </TabsList>
             <Card className="max-w-2xl xl:max-w-5xl mx-auto">
               <CardHeader>
-                <CardTitle className="text-lg">{i.fileTitle}</CardTitle>
+                <div className="flex items-center justify-between gap-2">
+                  <CardTitle className="text-lg">{i.fileTitle}</CardTitle>
+                  {pgpOptionsToggle}
+                </div>
                 <CardDescription>{i.filePgpDesc}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-5">
-                <MobileCollapsible label={i.advancedOptions}>
+                <div className={showPgpOptions ? "" : "hidden md:block"}>
                 <div className="grid gap-5 xl:grid-cols-2">
                 <div className="space-y-2">
                   <Label>{i.pgpSymmetricAlgorithm}</Label>
@@ -500,8 +494,8 @@ const Index = () => {
                   </p>
                 )}
                 </div>
-                </MobileCollapsible>
-                <div className="space-y-2">
+                </div>
+                <div className={`space-y-2 ${showPgpOptions ? "" : "max-md:!mt-0"}`}>
                   <Label>{i.secretKey}</Label>
                   <div className="flex gap-1">
                     <div className="relative flex-1">
