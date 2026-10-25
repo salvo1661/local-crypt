@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -80,6 +81,13 @@ const SITE_META: Record<Lang, { title: string; description: string }> = {
 
 function hashText(algo: HashAlgo, text: string): string {
   return CryptoJS[HASH_IMPL[algo]](text).toString();
+}
+
+// CryptoJS "SHA3" is pre-standard Keccak, so HMAC-SHA3 would not match standard implementations.
+const HMAC_ALGOS: HashAlgo[] = HASH_ALGOS.filter((a) => a !== "SHA-3");
+
+function hmacText(algo: HashAlgo, text: string, key: string): string {
+  return CryptoJS[`Hmac${HASH_IMPL[algo]}`](text, key).toString();
 }
 
 async function encryptTextPgp(text: string, passphrase: string, config: PartialConfig): Promise<string> {
@@ -197,6 +205,9 @@ const Index = () => {
   const [secretKey, setSecretKey] = useState("");
   const [showKey, setShowKey] = useState(false);
   const [hashAlgo, setHashAlgo] = useState<HashAlgo>("SHA-256");
+  const [useHmac, setUseHmac] = useState(false);
+  const [hmacKey, setHmacKey] = useState("");
+  const [showHmacKey, setShowHmacKey] = useState(false);
   const [textMode, setTextMode] = useState<"encrypt" | "decrypt">("encrypt");
 
   const [file, setFile] = useState<File | null>(null);
@@ -549,15 +560,53 @@ const Index = () => {
                   <Label>{i.hashAlgo}</Label>
                   <Select value={hashAlgo} onValueChange={(v) => setHashAlgo(v as HashAlgo)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{HASH_ALGOS.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}</SelectContent>
+                    <SelectContent>{(useHmac ? HMAC_ALGOS : HASH_ALGOS).map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="use-hmac"
+                    checked={useHmac}
+                    onCheckedChange={(checked) => {
+                      setUseHmac(checked);
+                      if (checked && !HMAC_ALGOS.includes(hashAlgo)) setHashAlgo("SHA-256");
+                    }}
+                  />
+                  <Label htmlFor="use-hmac" className="cursor-pointer">{i.hmacToggle}</Label>
+                </div>
+                {useHmac && (
+                  <div className="space-y-2">
+                    <Label>{i.hmacKey}</Label>
+                    <div className="flex gap-1">
+                      <div className="relative flex-1">
+                        <Input type={showHmacKey ? "text" : "password"} value={hmacKey} onChange={(e) => setHmacKey(e.target.value)} placeholder={i.hmacKeyPlaceholder} className="pr-9 font-mono text-xs" />
+                        <button type="button" onClick={() => setShowHmacKey(!showHmacKey)} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                          {showHmacKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                      <Button variant="outline" size="icon" onClick={() => generateRandomKey(setHmacKey)} title={i.randomKey}><RefreshCw className="h-4 w-4" /></Button>
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label>{i.hashInput}</Label>
                   <Textarea value={textInput} onChange={(e) => setTextInput(e.target.value)} placeholder={i.hashPlaceholder} className="font-mono text-sm min-h-[120px]" />
                 </div>
-                <Button onClick={() => { if (!textInput.trim()) { toast.error(i.errorNoText); return; } setTextOutput(hashText(hashAlgo, textInput)); toast.success(i.hashSuccess); }} className="w-full h-11 gap-2 font-semibold">
-                  <Hash className="h-4 w-4" /> {i.hashBtn}
+                <Button
+                  onClick={() => {
+                    if (!textInput.trim()) { toast.error(i.errorNoText); return; }
+                    if (useHmac) {
+                      if (!hmacKey) { toast.error(i.errorNoHmacKey); return; }
+                      setTextOutput(hmacText(hashAlgo, textInput, hmacKey));
+                      toast.success(i.hmacSuccess);
+                    } else {
+                      setTextOutput(hashText(hashAlgo, textInput));
+                      toast.success(i.hashSuccess);
+                    }
+                  }}
+                  className="w-full h-11 gap-2 font-semibold"
+                >
+                  <Hash className="h-4 w-4" /> {useHmac ? i.hmacBtn : i.hashBtn}
                 </Button>
                 {textOutput && (
                   <div className="space-y-2">
